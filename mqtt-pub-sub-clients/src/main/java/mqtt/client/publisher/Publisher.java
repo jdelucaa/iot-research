@@ -27,26 +27,26 @@ public class Publisher {
 			client = new MqttClient(BROKER_URL, clientId);
 		} catch (final MqttException e) {
 			e.printStackTrace();
-			System.exit(1);
+			throw new RuntimeException("Could not create the MQTT client.");
 		}
 	}
 
 	private void start() {
 
-		try {
 			final MqttConnectOptions options = new MqttConnectOptions();
 			options.setCleanSession(false);
 			options.setWill(client.getTopic("local/LWT"), "I'm gone :(".getBytes(), 0, false);
 
-			client.connect(options);
+			try {
+				client.connect(options);
+			} catch (final MqttException e) {
+				e.printStackTrace();
+				throw new RuntimeException("Could not start the MQTT client.");
+			}
 
 			while (true) {
 				publishTopics();
 			}
-		} catch (final Exception e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
 	}
 
 	private void publishTopics() {
@@ -59,14 +59,10 @@ public class Publisher {
 				sensorTopic.publish(new MqttMessage(csvLine.getBytes()));
 				System.out.println("Published data. Topic: " + sensorTopic.getName() + " Message: " + csvLine);
 
-				try {
-					Thread.sleep(300);
-				} catch (final InterruptedException e) {
-					e.printStackTrace();
-				}
+				Thread.sleep(300);
 			}
-		} catch (IOException | MqttException e1) {
-			e1.printStackTrace();
+		} catch (IOException | MqttException | InterruptedException e) {
+			e.printStackTrace();
 		}
 	}
 

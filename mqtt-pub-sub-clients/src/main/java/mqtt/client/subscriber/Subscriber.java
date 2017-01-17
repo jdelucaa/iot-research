@@ -8,24 +8,21 @@ import mqtt.client.util.Util;
 public class Subscriber {
 
 	public static final String BROKER_URL = "tcp://localhost:1883";
-
-	String clientId = Util.getMacAddress() + "-sub";
 	private MqttClient mqttClient;
 
 	public Subscriber() {
+		final String clientId = Util.getMacAddress() + "-sub";
 
 		try {
 			mqttClient = new MqttClient(BROKER_URL, clientId);
-
 		} catch (final MqttException e) {
 			e.printStackTrace();
-			System.exit(1);
+			throw new RuntimeException("Could not create the MQTT client.");
 		}
 	}
 
 	public void start() {
 		try {
-
 			mqttClient.setCallback(new SubscribeCallback());
 			mqttClient.connect();
 
@@ -36,7 +33,7 @@ public class Subscriber {
 
 		} catch (final MqttException e) {
 			e.printStackTrace();
-			System.exit(1);
+			throw new RuntimeException("Could not start the MQTT client.");
 		}
 	}
 

@@ -11,18 +11,15 @@ import org.eclipse.californium.core.CoapResponse;
 
 public class Client {
 
-	public static void main(final String[] args) {
+	public static void main(final String[] args) throws IOException {
 		final CoapClient client = new CoapClient("coap://localhost:5683/sensor");
+		final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
 		System.out.println("Press ENTER to start observing");
+		
+		br.readLine();
 
-		final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		try {
-			br.readLine();
-		} catch (final IOException e) {
-		}
-
-		System.out.println("OBSERVING - ENTER to stop)");
+		System.out.println("OBSERVING - (press ENTER to stop)");
 
 		final CoapObserveRelation relation = client.observe(new CoapHandler() {
 			@Override
@@ -33,14 +30,11 @@ public class Client {
 
 			@Override
 			public void onError() {
-				System.err.println("OBSERVING FAILED (press enter to exit)");
+				System.err.println("OBSERVING FAILED (press ENTER to exit)");
 			}
 		});
 
-		try {
-			br.readLine();
-		} catch (final IOException e) {
-		}
+		br.readLine();
 
 		System.out.println("CANCELED");
 		relation.proactiveCancel();

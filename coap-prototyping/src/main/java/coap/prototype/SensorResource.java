@@ -25,7 +25,7 @@ public class SensorResource extends CoapResource implements Listener {
 
     @Override
     public void handleGET(final CoapExchange exchange) {
-        System.out.println("Sensor.handleGet called");
+        System.out.println("handleGet called");
         final int port = exchange.advanced().getEndpoint().getAddress().getPort();
         exchange.respond(sensors.get(port).getSensorData());
     }
